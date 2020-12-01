@@ -3,6 +3,7 @@ from pygame import image
 import config
 from player import Player
 from game_state import GameState
+import math
 
 
 class Game:
@@ -11,6 +12,7 @@ class Game:
         self.objects = []
         self.game_state = GameState.NONE
         self.map = []
+        self.camera = [0, 0]
 
     def set_up(self):
         player = Player(1, 1)
@@ -29,7 +31,7 @@ class Game:
         self.render_map(self.screen)
 
         for object in self.objects:
-            object.render(self.screen)
+            object.render(self.screen, self.camera)
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -40,13 +42,13 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.game_state = GameState.ENDED
                 elif event.key == pygame.K_w or event.key == pygame.K_UP:  # up
-                    self.player.update_position(0, -1)
+                    self.move_unit(self.player, [0, -1])
                 elif event.key == pygame.K_s or event.key == pygame.K_DOWN:  # down
-                    self.player.update_position(0, 1)
+                    self.move_unit(self.player, [0, 1])
                 elif event.key == pygame.K_a or event.key == pygame.K_LEFT:  # up
-                    self.player.update_position(-1, 0)
+                    self.move_unit(self.player, [-1, 0])
                 elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:  # up
-                    self.player.update_position(1, 0)
+                    self.move_unit(self.player, [1, 0])
 
     def load_map(self, file_name):
         with open(f"maps/{file_name}.txt") as map_file:
@@ -62,15 +64,42 @@ class Game:
             print(self.map)
 
     def render_map(self, screen):
+        self.determine_camera()
+
         y_pos = 0
         for line in self.map:
             x_pos = 0
             for tile in line:
                 image = map_tile_image[tile]
-                rect = pygame.Rect(x_pos * config.SCALE, y_pos * config.SCALE, config.SCALE, config.SCALE)
+                rect = pygame.Rect(x_pos * config.SCALE, y_pos * config.SCALE - (self.camera[1] * config.SCALE), config.SCALE, config.SCALE)
                 screen.blit(image, rect)
                 x_pos += 1
             y_pos += 1
+
+    def move_unit(self, unit, position_change):
+        new_position = [unit.position[0] + position_change[0], unit.position[1] + position_change[1]]
+
+        if new_position[0] < 0 or new_position[0] > (len(self.map[0]) -1):
+            return
+        
+        if new_position[1] < 0 or new_position[1] > (len(self.map) -1):
+            return
+    
+        if self.map[new_position[1]][new_position[0]] == "W":
+            return
+
+        unit.update_position(new_position)
+
+    def determine_camera(self):
+        max_y_position = len(self.map) - config.SCREEN_HEIGHT / config.SCALE
+        y_position = self.player.position[1] - math.ceil(round(config.SCREEN_HEIGHT / config.SCALE / 2))
+
+        if y_position <= max_y_position and y_position >= 0:
+            self.camera[1] = y_position
+        elif y_position < 0:
+            self.camera[1] = 0
+        else:
+            self.camera[1] = max_y_position
 
 map_tile_image = {
     "G": pygame.transform.scale(pygame.image.load("imgs/grass1.png"), (config.SCALE, config.SCALE)),
