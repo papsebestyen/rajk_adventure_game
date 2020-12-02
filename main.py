@@ -4,6 +4,8 @@ from game_state import GameState
 
 from game import Game
 
+from tilemap import TiledMap
+
 pygame.init()
 
 screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))

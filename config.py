@@ -7,5 +7,5 @@ SCALE = 32
 KID = r"C:\Users\PSebi\Documents\Python\rajk_adventure_game\kid.svg"
 PENIS = r"C:\Users\PSebi\Documents\Python\rajk_adventure_game\penis.svg"
 
-SCREEN_HEIGHT = 480
-SCREEN_WIDTH = 640
+SCREEN_HEIGHT = 288
+SCREEN_WIDTH = 384
