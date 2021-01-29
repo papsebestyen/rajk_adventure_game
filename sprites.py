@@ -123,7 +123,7 @@ class QuestionBox():
             self.title = f'{mob.name}: {MOBS[mob.name]["question"]}'
             self.question = {q: f'{q.upper()}: {MOBS[mob.name][q]}' for q in 'abcd'}
         else:
-            self.title = f'{mob.name}: Már találkoztunk, húzzá má el innét!'
+            self.title = f'{mob.name}: Megint itt? Én most nem érek rá.'
         self.mob = mob
         self.game.stop = True
 
